@@ -1,0 +1,54 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Prometheus Helm Values (for EKS deployment)                ║
+# ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+# ╚══════════════════════════════════════════════════════════════╝
+#
+# Install: helm install prometheus prometheus-community/kube-prometheus-stack \
+#          -f monitoring/prometheus/prometheus-values.yaml -n monitoring --create-namespace
+
+alertmanager:
+  enabled: true
+
+grafana:
+  enabled: true
+  adminPassword: "admin"  # Change in production!
+  persistence:
+    enabled: true
+    size: 10Gi
+
+prometheus:
+  prometheusSpec:
+    retention: 15d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+
+    additionalScrapeConfigs:
+      - job_name: "flask-eks-app"
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - flask-app
+                - flask-app-dev
+                - flask-app-staging
+                - flask-app-prod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            target_label: __address__
+            regex: (.+)
+            replacement: $1

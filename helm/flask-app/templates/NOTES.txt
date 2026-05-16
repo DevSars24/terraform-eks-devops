@@ -1,0 +1,26 @@
+╔══════════════════════════════════════════════════════════════════╗
+║  Flask EKS DevOps App — Helm Chart                              ║
+║  Author: Saurabh Singh Rajput (@DevSars24)                     ║
+╚══════════════════════════════════════════════════════════════════╝
+
+🎉 {{ include "flask-app.fullname" . }} has been deployed!
+
+📋 Quick Commands:
+
+  # Check pod status
+  kubectl get pods -l "app.kubernetes.io/name={{ include "flask-app.name" . }}" -n {{ .Release.Namespace }}
+
+  # View logs
+  kubectl logs -l "app.kubernetes.io/name={{ include "flask-app.name" . }}" -n {{ .Release.Namespace }} -f
+
+  # Port-forward for local access
+  kubectl port-forward svc/{{ include "flask-app.fullname" . }} 5000:{{ .Values.service.port }} -n {{ .Release.Namespace }}
+
+  # Then open: http://localhost:5000
+
+📊 Endpoints:
+  /         → Welcome page
+  /health   → Liveness probe
+  /ready    → Readiness probe
+  /metrics  → Application metrics
+  /api/info → App information

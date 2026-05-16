@@ -1,0 +1,37 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Ingress (AWS ALB Ingress Controller)                       ║
+# ║  Exposes the app externally via AWS Application LB          ║
+# ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+# ╚══════════════════════════════════════════════════════════════╝
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flask-eks-app
+  namespace: flask-app
+  labels:
+    app.kubernetes.io/name: flask-eks-app
+  annotations:
+    # AWS ALB Ingress Controller annotations
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "30"
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "5"
+    alb.ingress.kubernetes.io/healthy-threshold-count: "2"
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: "3"
+    # SSL (uncomment when you have a certificate)
+    # alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:ACCOUNT:certificate/CERT-ID
+    # alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    # alb.ingress.kubernetes.io/ssl-redirect: "443"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: flask-eks-app
+                port:
+                  number: 80

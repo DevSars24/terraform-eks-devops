@@ -1,0 +1,56 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  RBAC — Role-Based Access Control                           ║
+# ║  Least-privilege access for the Flask application           ║
+# ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+# ─── Role: App can read ConfigMaps and Secrets in its namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: flask-eks-app-role
+  namespace: flask-app
+  labels:
+    app.kubernetes.io/name: flask-eks-app
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get"]
+    resourceNames: ["flask-eks-app-secret"]
+
+---
+# ─── RoleBinding: Bind the role to the service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: flask-eks-app-rolebinding
+  namespace: flask-app
+  labels:
+    app.kubernetes.io/name: flask-eks-app
+subjects:
+  - kind: ServiceAccount
+    name: flask-eks-app
+    namespace: flask-app
+roleRef:
+  kind: Role
+  name: flask-eks-app-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ─── ClusterRole: Read-only access for monitoring
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: flask-eks-app-monitoring
+  labels:
+    app.kubernetes.io/name: flask-eks-app
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch"]

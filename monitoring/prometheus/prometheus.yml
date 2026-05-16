@@ -1,0 +1,22 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Prometheus Configuration                                   ║
+# ║  For local development with Docker Compose                  ║
+# ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "flask-eks-app"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["flask-app:5000"]
+        labels:
+          app: "flask-eks-app"
+          environment: "development"
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]

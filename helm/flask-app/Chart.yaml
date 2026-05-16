@@ -1,0 +1,18 @@
+apiVersion: v2
+name: flask-eks-app
+description: A production-grade Helm chart for Flask application on AWS EKS
+type: application
+version: 1.0.0
+appVersion: "2.0.0"
+maintainers:
+  - name: Saurabh Singh Rajput
+    url: https://github.com/DevSars24
+keywords:
+  - flask
+  - eks
+  - kubernetes
+  - devops
+  - aws
+home: https://github.com/DevSars24/terraform-eks-devops
+sources:
+  - https://github.com/DevSars24/terraform-eks-devops

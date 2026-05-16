@@ -1,0 +1,25 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Trivy Security Scanner Configuration                       ║
+# ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+severity:
+  - CRITICAL
+  - HIGH
+
+# Skip specific CVEs if needed (false positives)
+# ignorefile: .trivyignore
+
+scan:
+  # Scan for vulnerabilities
+  vulnerability: true
+  # Scan for misconfigurations
+  misconfiguration: true
+  # Scan for secrets
+  secret: true
+
+# Output format
+format: table
+
+# Exit code on findings
+exit-code: 1
