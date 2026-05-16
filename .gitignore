@@ -1,0 +1,88 @@
+# ========================
+# Terraform
+# ========================
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+*.tfplan
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.auto.tfvars
+
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.mypy_cache/
+.ruff_cache/
+
+# ========================
+# Virtual Environments
+# ========================
+venv/
+.venv/
+ENV/
+env/
+
+# ========================
+# Docker
+# ========================
+*.log
+docker-compose.override.yml
+
+# ========================
+# IDE / Editor
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ========================
+# Environment Variables
+# ========================
+.env
+.env.*
+!.env.example
+
+# ========================
+# OS
+# ========================
+*.tmp
+*.bak
+*.orig
+
+# ========================
+# Kubernetes
+# ========================
+kubeconfig
+*.kubeconfig
+
+# ========================
+# Misc
+# ========================
+node_modules/
+*.zip
+*.tar.gz

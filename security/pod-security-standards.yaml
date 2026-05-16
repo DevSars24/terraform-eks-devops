@@ -1,0 +1,22 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Pod Security Standards                                     ║
+# ║  Enforces security best practices at the namespace level    ║
+# ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+# Apply Pod Security Standards via namespace labels
+# This replaces the deprecated PodSecurityPolicy (PSP)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flask-app
+  labels:
+    # Enforce restricted security profile
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+    # Warn on baseline violations
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest
+    # Audit all violations
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: latest

@@ -1,0 +1,28 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Development Dockerfile                                     ║
+# ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+# ║  Features: Hot-reload, Debug mode                          ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+FROM python:3.11-slim
+
+LABEL maintainer="Saurabh Singh Rajput <github.com/DevSars24>"
+LABEL description="Development Flask App with hot-reload"
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+EXPOSE 5000
+
+ENV FLASK_ENV=development \
+    FLASK_DEBUG=1 \
+    PYTHONUNBUFFERED=1
+
+# Development server with auto-reload
+CMD ["python", "run.py"]

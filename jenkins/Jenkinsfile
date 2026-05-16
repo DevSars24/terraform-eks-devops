@@ -1,0 +1,146 @@
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  Jenkins Declarative Pipeline — CI/CD                      ║
+// ║  Build → Test → Scan → Push → Deploy                      ║
+// ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION       = 'ap-south-1'
+        ECR_REGISTRY     = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        ECR_REPOSITORY   = 'flask-eks-devops'
+        EKS_CLUSTER_NAME = 'flask-eks'
+        IMAGE_TAG        = "${BUILD_NUMBER}-${GIT_COMMIT[0..7]}"
+        DOCKER_BUILDKIT  = '1'
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 30, unit: 'MINUTES')
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        // ─── Stage 1: Checkout ──────────────────────────────────
+        stage('📥 Checkout') {
+            steps {
+                checkout scm
+                sh 'echo "Building commit: ${GIT_COMMIT}"'
+            }
+        }
+
+        // ─── Stage 2: Parallel — Lint & Test ────────────────────
+        stage('🔍 Quality Gates') {
+            parallel {
+                stage('🧹 Lint') {
+                    steps {
+                        sh '''
+                            pip install flake8 black
+                            flake8 app/ --max-line-length=100 --statistics
+                            black --check --line-length=100 app/
+                        '''
+                    }
+                }
+                stage('🧪 Test') {
+                    steps {
+                        sh '''
+                            pip install -r requirements.txt
+                            pytest app/tests/ -v --cov=app --cov-report=xml
+                        '''
+                    }
+                    post {
+                        always {
+                            junit allowEmptyResults: true, testResults: '**/test-results.xml'
+                        }
+                    }
+                }
+            }
+        }
+
+        // ─── Stage 3: Docker Build ─────────────────────────────
+        stage('🐳 Docker Build') {
+            steps {
+                sh """
+                    docker build -t ${ECR_REPOSITORY}:${IMAGE_TAG} \
+                        -f docker/Dockerfile .
+                    docker tag ${ECR_REPOSITORY}:${IMAGE_TAG} \
+                        ${ECR_REPOSITORY}:latest
+                """
+            }
+        }
+
+        // ─── Stage 4: Security Scan ─────────────────────────────
+        stage('🔒 Security Scan') {
+            steps {
+                sh """
+                    trivy image --severity HIGH,CRITICAL \
+                        --exit-code 0 \
+                        ${ECR_REPOSITORY}:${IMAGE_TAG}
+                """
+            }
+        }
+
+        // ─── Stage 5: Push to ECR ───────────────────────────────
+        stage('📦 Push to ECR') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'develop'
+                }
+            }
+            steps {
+                withAWS(credentials: 'aws-credentials', region: "${AWS_REGION}") {
+                    sh """
+                        aws ecr get-login-password --region ${AWS_REGION} | \
+                            docker login --username AWS --password-stdin ${ECR_REGISTRY}
+                        docker tag ${ECR_REPOSITORY}:${IMAGE_TAG} \
+                            ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+                        docker tag ${ECR_REPOSITORY}:latest \
+                            ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+                        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+                        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+                    """
+                }
+            }
+        }
+
+        // ─── Stage 6: Deploy to EKS ────────────────────────────
+        stage('🚀 Deploy to EKS') {
+            when {
+                branch 'main'
+            }
+            steps {
+                withAWS(credentials: 'aws-credentials', region: "${AWS_REGION}") {
+                    sh """
+                        aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region ${AWS_REGION}
+                        helm upgrade --install flask-app ./helm/flask-app \
+                            --set image.repository=${ECR_REGISTRY}/${ECR_REPOSITORY} \
+                            --set image.tag=${IMAGE_TAG} \
+                            --namespace flask-app \
+                            --create-namespace \
+                            --wait \
+                            --timeout 5m
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Pipeline completed successfully!'
+            // Uncomment for Slack notification:
+            // slackSend(color: 'good', message: "✅ Build #${BUILD_NUMBER} succeeded")
+        }
+        failure {
+            echo '❌ Pipeline failed!'
+            // slackSend(color: 'danger', message: "❌ Build #${BUILD_NUMBER} failed")
+        }
+        always {
+            cleanWs()
+        }
+    }
+}

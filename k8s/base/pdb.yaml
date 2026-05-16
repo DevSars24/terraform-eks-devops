@@ -1,0 +1,18 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Pod Disruption Budget (PDB)                                ║
+# ║  Ensures minimum availability during voluntary disruptions  ║
+# ║  (node drains, cluster upgrades, etc.)                      ║
+# ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+# ╚══════════════════════════════════════════════════════════════╝
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: flask-eks-app
+  namespace: flask-app
+  labels:
+    app.kubernetes.io/name: flask-eks-app
+spec:
+  minAvailable: 1  # At least 1 pod must always be running
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: flask-eks-app

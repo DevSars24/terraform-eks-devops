@@ -1,0 +1,95 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Docker Compose — Local Development Stack                  ║
+# ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+# ║  Services: Flask App + Redis (Cache) + Prometheus          ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+version: "3.9"
+
+services:
+  # ─── Flask Application ──────────────────────────────────────
+  flask-app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: flask-eks-app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - .:/app
+      - /app/__pycache__
+    networks:
+      - devops-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # ─── Redis (Optional Cache Layer) ──────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: flask-eks-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - devops-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # ─── Prometheus (Metrics Collection) ────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: flask-eks-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - devops-network
+    restart: unless-stopped
+
+  # ─── Grafana (Metrics Visualization) ────────────────────────
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: flask-eks-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - devops-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+# ─── Volumes ──────────────────────────────────────────────────
+volumes:
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+# ─── Networks ─────────────────────────────────────────────────
+networks:
+  devops-network:
+    driver: bridge
+    name: flask-eks-devops-network

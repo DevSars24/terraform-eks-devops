@@ -1,0 +1,9 @@
+# Staging environment overrides
+replicaCount: 2
+
+image:
+  tag: "staging-latest"
+
+env:
+  FLASK_ENV: "staging"
+  LOG_LEVEL: "INFO"

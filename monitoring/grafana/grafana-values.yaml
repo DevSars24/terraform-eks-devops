@@ -1,0 +1,40 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Grafana Helm Values                                        ║
+# ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+# ╚══════════════════════════════════════════════════════════════╝
+#
+# Install: helm install grafana grafana/grafana \
+#          -f monitoring/grafana/grafana-values.yaml -n monitoring
+
+adminUser: admin
+adminPassword: admin  # Change in production!
+
+persistence:
+  enabled: true
+  size: 5Gi
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.monitoring.svc:9090
+        access: proxy
+        isDefault: true
+
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: "default"
+        orgId: 1
+        folder: ""
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+
+dashboardsConfigMaps:
+  default: grafana-dashboards

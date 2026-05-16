@@ -1,0 +1,23 @@
+# Dev environment overrides
+replicaCount: 1
+
+image:
+  tag: "dev-latest"
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 250m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+
+env:
+  FLASK_ENV: "development"
+  LOG_LEVEL: "DEBUG"
+
+podDisruptionBudget:
+  enabled: false

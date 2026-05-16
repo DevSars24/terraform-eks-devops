@@ -1,0 +1,25 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Service                                                    ║
+# ║  Exposes the Flask app within the cluster                   ║
+# ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
+# ╚══════════════════════════════════════════════════════════════╝
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-eks-app
+  namespace: flask-app
+  labels:
+    app.kubernetes.io/name: flask-eks-app
+    app.kubernetes.io/component: backend
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "5000"
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: flask-eks-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
