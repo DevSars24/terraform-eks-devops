@@ -133,7 +133,7 @@ flowchart TB
         CD["CD Pipeline<br/>build · push · deploy"]
     end
 
-    subgraph AWS["☁️ AWS Cloud — ap-south-1"]
+    subgraph AWS["☁️ AWS Cloud — ap-southeast-2"]
         ECR["📦 ECR<br/>Docker Image Registry"]
         subgraph VPC["🌐 VPC — 10.1.0.0/16"]
             subgraph PUB["Public Subnets"]
@@ -200,10 +200,10 @@ sequenceDiagram
 ### 3.2 AWS Network Layout
 
 ```
-AWS Cloud (ap-south-1)
+AWS Cloud (ap-southeast-2)
 ├── VPC (10.1.0.0/16)
-│   ├── Public Subnets (ap-south-1a, ap-south-1b)  ← ALB Load Balancer, NAT Gateway
-│   └── Private Subnets (ap-south-1a, ap-south-1b) ← EKS Worker Nodes (no direct internet)
+│   ├── Public Subnets (ap-southeast-2a, ap-southeast-2b)  ← ALB Load Balancer, NAT Gateway
+│   └── Private Subnets (ap-southeast-2a, ap-southeast-2b) ← EKS Worker Nodes (no direct internet)
 │       └── EKS Cluster: flask-eks (k8s 1.29)
 │           ├── Node Group: 2 × t3.medium (ON_DEMAND, max 4)
 │           └── Namespaces:
@@ -519,11 +519,11 @@ flowchart TD
 | `terraform/provider.tf` | AWS + Kubernetes providers configuration |
 | `terraform/backend.tf` | S3 + DynamoDB remote state backend (**currently commented out** — requires bootstrap) |
 
-### 7.3 Default Variables (`ap-south-1` region)
+### 7.3 Default Variables (`ap-southeast-2` region)
 
 | Variable | Default |
 |----------|---------|
-| `aws_region` | `ap-south-1` |
+| `aws_region` | `ap-southeast-2` |
 | `cluster_name` | `flask-eks` |
 | `cluster_version` | `1.29` |
 | `vpc_cidr` | `10.1.0.0/16` |
@@ -573,7 +573,7 @@ terraform plan -var-file=environments/dev/terraform.tfvars
 terraform apply -var-file=environments/dev/terraform.tfvars
 
 # 6. Grab the new cluster's kubeconfig
-aws eks update-kubeconfig --region ap-south-1 --name flask-eks
+aws eks update-kubeconfig --region ap-southeast-2 --name flask-eks
 
 # 7. Verify connectivity
 kubectl get nodes
@@ -886,7 +886,7 @@ Configure these secrets in your repository settings (**Settings** → **Secrets 
 |-------------|----------|-------------|-------------------|
 | `AWS_ACCESS_KEY_ID` | **Yes** | AWS IAM Access Key ID for CI/CD authentication | `AKIAIOSFODNN7EXAMPLE` |
 | `AWS_SECRET_ACCESS_KEY` | **Yes** | AWS IAM Secret Access Key for CI/CD authentication | `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` |
-| `AWS_REGION` | No | Target AWS Region (defaults to `ap-south-1` if omitted) | `ap-south-1` |
+| `AWS_REGION` | No | Target AWS Region (defaults to `ap-southeast-2` if omitted) | `ap-southeast-2` |
 
 > [!NOTE]
 > Ensure the IAM user attached to these credentials has permissions for Amazon EKS, ECR, VPC, EC2, and IAM. Workflows gracefully skip AWS-dependent steps if secrets are absent (e.g. during PRs from external forks).
@@ -1121,8 +1121,8 @@ curl http://localhost:5000/health
 
 ```bash
 # Create the S3 bucket + DynamoDB lock table (one-time, do this manually or with a small script)
-aws s3api create-bucket --bucket flask-eks-tfstate-<unique-suffix> --region ap-south-1 \
-  --create-bucket-configuration LocationConstraint=ap-south-1
+aws s3api create-bucket --bucket flask-eks-tfstate-<unique-suffix> --region ap-southeast-2 \
+  --create-bucket-configuration LocationConstraint=ap-southeast-2
 aws dynamodb create-table --table-name flask-eks-tf-locks \
   --attribute-definitions AttributeName=LockID,AttributeType=S \
   --key-schema AttributeName=LockID,KeyType=HASH \
@@ -1144,7 +1144,7 @@ terraform apply -var-file=environments/dev/terraform.tfvars
 ### Step 5 — Connect `kubectl`
 
 ```bash
-aws eks update-kubeconfig --region ap-south-1 --name flask-eks
+aws eks update-kubeconfig --region ap-southeast-2 --name flask-eks
 kubectl get nodes    # should list 2 t3.medium nodes
 ```
 
@@ -1162,12 +1162,12 @@ helm install monitoring prometheus-community/kube-prometheus-stack \
 
 ```bash
 # Authenticate Docker to ECR
-aws ecr get-login-password --region ap-south-1 | \
-  docker login --username AWS --password-stdin <account-id>.dkr.ecr.ap-south-1.amazonaws.com
+aws ecr get-login-password --region ap-southeast-2 | \
+  docker login --username AWS --password-stdin <account-id>.dkr.ecr.ap-southeast-2.amazonaws.com
 
 docker build -f docker/Dockerfile -t flask-eks-app:v1 .
-docker tag flask-eks-app:v1 <account-id>.dkr.ecr.ap-south-1.amazonaws.com/flask-eks-devops-dev:v1
-docker push <account-id>.dkr.ecr.ap-south-1.amazonaws.com/flask-eks-devops-dev:v1
+docker tag flask-eks-app:v1 <account-id>.dkr.ecr.ap-southeast-2.amazonaws.com/flask-eks-devops-dev:v1
+docker push <account-id>.dkr.ecr.ap-southeast-2.amazonaws.com/flask-eks-devops-dev:v1
 ```
 
 ### Step 8 — Deploy to Dev

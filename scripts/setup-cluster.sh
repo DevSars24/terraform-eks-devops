@@ -8,7 +8,7 @@ set -euo pipefail
 
 # ─── Configuration ────────────────────────────────────────────
 ENVIRONMENT="${1:-dev}"
-AWS_REGION="${AWS_REGION:-ap-south-1}"
+AWS_REGION="${AWS_REGION:-ap-southeast-2}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 

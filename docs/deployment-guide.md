@@ -46,7 +46,7 @@ make docker-compose-up
 
 ```bash
 aws configure
-# Enter your AWS Access Key, Secret Key, Region (ap-south-1)
+# Enter your AWS Access Key, Secret Key, Region (ap-southeast-2)
 ```
 
 ### Step 2: Provision Infrastructure

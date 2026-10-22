@@ -30,6 +30,12 @@ def create_app(config_name: str = None) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_by_name[config_name])
 
+    if config_name == "production":
+        secret_key = os.getenv("SECRET_KEY")
+        if not secret_key:
+            raise ValueError("SECRET_KEY environment variable must be set in production")
+        app.config["SECRET_KEY"] = secret_key
+
     # ─── Configure Structured Logging ───────────────────────────────────
     _configure_logging(app)
 

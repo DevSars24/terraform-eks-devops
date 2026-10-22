@@ -23,7 +23,7 @@ on:
           - prod
 
 env:
-  AWS_REGION: ap-south-1
+  AWS_REGION: ap-southeast-2
   ECR_REPOSITORY: flask-eks-devops
   EKS_CLUSTER_NAME: flask-eks
 

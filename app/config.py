@@ -40,7 +40,7 @@ class ProductionConfig(BaseConfig):
     DEBUG = False
     TESTING = False
     LOG_LEVEL = "WARNING"
-    SECRET_KEY = os.getenv("SECRET_KEY", "prod-secret-fallback-token-replace-in-env")
+    SECRET_KEY = os.getenv("SECRET_KEY")
 
 
 class TestingConfig(BaseConfig):
