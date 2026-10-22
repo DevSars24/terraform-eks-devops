@@ -6,7 +6,7 @@
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.8.4"
+  version = "~> 20.31"
 
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
@@ -43,6 +43,8 @@ module "eks" {
     # General purpose node group
     general = {
       name = "${var.cluster_name}-general"
+
+      ami_type = "AL2023_x86_64_STANDARD"
 
       desired_size = var.node_desired_size
       max_size     = var.node_max_size

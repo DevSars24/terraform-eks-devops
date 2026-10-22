@@ -14,7 +14,7 @@ public_subnet_cidrs  = ["10.3.101.0/24", "10.3.102.0/24", "10.3.103.0/24"]
 
 # EKS
 cluster_name      = "flask-eks-prod"
-cluster_version   = "1.29"
+cluster_version   = "1.34"
 node_desired_size = 3
 node_max_size     = 6
 node_min_size     = 2
