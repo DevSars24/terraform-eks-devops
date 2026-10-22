@@ -35,11 +35,29 @@ def create_app(config_name: str = None) -> Flask:
 
     # ─── Register Blueprints ────────────────────────────────────────────
     from app.routes import api_bp, health_bp
+
     app.register_blueprint(api_bp)
     app.register_blueprint(health_bp)
 
     # ─── Register Error Handlers ────────────────────────────────────────
     _register_error_handlers(app)
+
+    # ─── Enable CORS ────────────────────────────────────────────────────
+    from flask_cors import CORS
+
+    CORS(app, resources={r"/*": {"origins": "*"}})
+
+    # ─── Security Guardrail Headers (OWASP Hardening) ───────────────────
+    @app.after_request
+    def _add_security_headers(response):
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Content-Security-Policy"] = "default-src 'self'; frame-ancestors 'none';"
+        if not app.config.get("DEBUG", False):
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        return response
 
     app.logger.info(
         "Application initialized | env=%s | debug=%s",

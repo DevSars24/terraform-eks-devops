@@ -21,8 +21,8 @@ LABEL maintainer="Saurabh Singh Rajput <github.com/DevSars24>"
 LABEL description="Production Flask App for AWS EKS"
 LABEL version="2.0.0"
 
-# Security: Create non-root user
-RUN groupadd -r appuser && useradd -r -g appuser -d /app -s /sbin/nologin appuser
+# Security: Create non-root user (UID/GID 1000 aligned with K8s securityContext)
+RUN groupadd -g 1000 appuser && useradd -u 1000 -g appuser -d /app -s /sbin/nologin appuser
 
 WORKDIR /app
 
@@ -31,7 +31,7 @@ COPY --from=builder /install /usr/local
 
 # Copy application code
 COPY app/ ./app/
-COPY run.py .
+COPY run.py app.py ./
 
 # Security: Set ownership and switch to non-root user
 RUN chown -R appuser:appuser /app

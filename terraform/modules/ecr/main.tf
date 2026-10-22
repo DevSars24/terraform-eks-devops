@@ -6,7 +6,7 @@
 
 resource "aws_ecr_repository" "app" {
   name                 = var.repository_name
-  image_tag_mutability = "IMMUTABLE"  # Security: Prevent image tag overwriting
+  image_tag_mutability = var.image_tag_mutability  # Configurable (MUTABLE for branch tags like latest, or IMMUTABLE)
 
   image_scanning_configuration {
     scan_on_push = true  # Security: Auto-scan images for vulnerabilities

@@ -8,3 +8,9 @@ variable "common_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "image_tag_mutability" {
+  description = "The tag mutability setting for the repository (MUTABLE or IMMUTABLE)"
+  type        = string
+  default     = "MUTABLE"
+}

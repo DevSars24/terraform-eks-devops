@@ -28,6 +28,7 @@ def client(app):
 # ROOT ENDPOINT TESTS
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestRootEndpoint:
     """Tests for the root (/) endpoint."""
 
@@ -65,6 +66,7 @@ class TestRootEndpoint:
 # APP INFO ENDPOINT TESTS
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestAppInfoEndpoint:
     """Tests for the /api/info endpoint."""
 
@@ -94,6 +96,7 @@ class TestAppInfoEndpoint:
 # ═══════════════════════════════════════════════════════════════════════════
 # HEALTH CHECK TESTS (Kubernetes Probes)
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestHealthEndpoints:
     """Tests for Kubernetes liveness and readiness probes."""
@@ -134,6 +137,7 @@ class TestHealthEndpoints:
 # METRICS ENDPOINT TESTS
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestMetricsEndpoint:
     """Tests for the /metrics endpoint."""
 
@@ -157,6 +161,7 @@ class TestMetricsEndpoint:
 # ERROR HANDLING TESTS
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestErrorHandling:
     """Tests for error handler responses."""
 
@@ -176,6 +181,7 @@ class TestErrorHandling:
 # ═══════════════════════════════════════════════════════════════════════════
 # CONFIGURATION TESTS
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestConfiguration:
     """Tests for application configuration."""
@@ -197,3 +203,34 @@ class TestConfiguration:
         app = create_app("production")
         assert app.config["DEBUG"] is False
         assert app.config["TESTING"] is False
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# SECURITY GUARDRAIL TESTS
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class TestSecurityGuardrails:
+    """Tests for security headers and CORS protection."""
+
+    def test_security_headers_present(self, client):
+        """Responses should include OWASP security headers."""
+        response = client.get("/")
+        assert response.headers.get("X-Content-Type-Options") == "nosniff"
+        assert response.headers.get("X-Frame-Options") == "DENY"
+        assert response.headers.get("X-XSS-Protection") == "1; mode=block"
+        assert response.headers.get("Referrer-Policy") == "strict-origin-when-cross-origin"
+        assert "default-src 'self'" in response.headers.get("Content-Security-Policy", "")
+
+    def test_cors_headers_present(self, client):
+        """Responses should handle CORS properly."""
+        response = client.get("/", headers={"Origin": "https://example.com"})
+        assert response.headers.get("Access-Control-Allow-Origin") in ["*", "https://example.com"]
+
+    def test_hsts_header_in_production(self):
+        """Production mode should include Strict-Transport-Security."""
+        prod_app = create_app("production")
+        with prod_app.test_client() as client:
+            response = client.get("/")
+            assert "Strict-Transport-Security" in response.headers
+            assert "max-age=31536000" in response.headers["Strict-Transport-Security"]

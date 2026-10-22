@@ -90,3 +90,10 @@ variable "capacity_type" {
   type        = string
   default     = "ON_DEMAND"
 }
+
+# ─── ECR ──────────────────────────────────────────────────────
+variable "ecr_image_tag_mutability" {
+  description = "The tag mutability setting for the ECR repository (MUTABLE or IMMUTABLE)"
+  type        = string
+  default     = "MUTABLE"
+}

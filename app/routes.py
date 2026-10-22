@@ -31,6 +31,7 @@ _metrics = {
 # API ROUTES
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 @api_bp.before_request
 def _track_request():
     """Track request metrics before processing."""
@@ -47,14 +48,16 @@ def home():
     Returns:
         JSON response with welcome message and app info.
     """
-    return jsonify({
-        "message": "🚀 Flask App running on AWS EKS",
-        "version": current_app.config.get("APP_VERSION", "unknown"),
-        "environment": current_app.config.get("ENV", "production"),
-        "author": "Saurabh Singh Rajput",
-        "github": "https://github.com/DevSars24",
-        "docs": "/api/info",
-    })
+    return jsonify(
+        {
+            "message": "🚀 Flask App running on AWS EKS",
+            "version": current_app.config.get("APP_VERSION", "unknown"),
+            "environment": current_app.config.get("ENV", "production"),
+            "author": "Saurabh Singh Rajput",
+            "github": "https://github.com/DevSars24",
+            "docs": "/api/info",
+        }
+    )
 
 
 @api_bp.route("/api/info")
@@ -65,25 +68,28 @@ def app_info():
     Returns:
         JSON response with detailed application metadata.
     """
-    return jsonify({
-        "app_name": current_app.config.get("APP_NAME"),
-        "version": current_app.config.get("APP_VERSION"),
-        "python_version": platform.python_version(),
-        "platform": platform.platform(),
-        "uptime_seconds": round(time.time() - _start_time, 2),
-        "endpoints": [
-            {"path": "/", "method": "GET", "description": "Welcome page"},
-            {"path": "/api/info", "method": "GET", "description": "App information"},
-            {"path": "/health", "method": "GET", "description": "Liveness probe"},
-            {"path": "/ready", "method": "GET", "description": "Readiness probe"},
-            {"path": "/metrics", "method": "GET", "description": "App metrics"},
-        ],
-    })
+    return jsonify(
+        {
+            "app_name": current_app.config.get("APP_NAME"),
+            "version": current_app.config.get("APP_VERSION"),
+            "python_version": platform.python_version(),
+            "platform": platform.platform(),
+            "uptime_seconds": round(time.time() - _start_time, 2),
+            "endpoints": [
+                {"path": "/", "method": "GET", "description": "Welcome page"},
+                {"path": "/api/info", "method": "GET", "description": "App information"},
+                {"path": "/health", "method": "GET", "description": "Liveness probe"},
+                {"path": "/ready", "method": "GET", "description": "Readiness probe"},
+                {"path": "/metrics", "method": "GET", "description": "App metrics"},
+            ],
+        }
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # HEALTH CHECK ENDPOINTS (Kubernetes Probes)
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 @health_bp.route("/health")
 def liveness():
@@ -94,11 +100,16 @@ def liveness():
     Returns:
         200 OK if the application process is running.
     """
-    return jsonify({
-        "status": "healthy",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "uptime_seconds": round(time.time() - _start_time, 2),
-    }), 200
+    return (
+        jsonify(
+            {
+                "status": "healthy",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "uptime_seconds": round(time.time() - _start_time, 2),
+            }
+        ),
+        200,
+    )
 
 
 @health_bp.route("/ready")
@@ -120,11 +131,16 @@ def readiness():
     all_healthy = all(checks.values())
     status_code = 200 if all_healthy else 503
 
-    return jsonify({
-        "status": "ready" if all_healthy else "not_ready",
-        "checks": checks,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    }), status_code
+    return (
+        jsonify(
+            {
+                "status": "ready" if all_healthy else "not_ready",
+                "checks": checks,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        ),
+        status_code,
+    )
 
 
 @health_bp.route("/metrics")
@@ -136,11 +152,13 @@ def metrics():
     Returns:
         JSON response with application metrics.
     """
-    return jsonify({
-        "uptime_seconds": round(time.time() - _start_time, 2),
-        "total_requests": _metrics["total_requests"],
-        "total_errors": _metrics["total_errors"],
-        "endpoint_hits": _metrics["endpoint_hits"],
-        "python_version": platform.python_version(),
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    })
+    return jsonify(
+        {
+            "uptime_seconds": round(time.time() - _start_time, 2),
+            "total_requests": _metrics["total_requests"],
+            "total_errors": _metrics["total_errors"],
+            "endpoint_hits": _metrics["endpoint_hits"],
+            "python_version": platform.python_version(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+    )
