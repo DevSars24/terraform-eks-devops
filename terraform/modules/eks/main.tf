@@ -11,6 +11,9 @@ module "eks" {
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
 
+  # Disabled to comply with SCP restrictions denying iam:CreateOpenIDConnectProvider
+  enable_irsa = false
+
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
 

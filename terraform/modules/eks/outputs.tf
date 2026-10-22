@@ -19,6 +19,6 @@ output "cluster_security_group_id" {
 }
 
 output "oidc_provider_arn" {
-  description = "ARN of the OIDC Provider for IRSA"
-  value       = module.eks.oidc_provider_arn
+  description = "ARN of the OIDC Provider for IRSA (null if enable_irsa is false)"
+  value       = try(module.eks.oidc_provider_arn, null)
 }

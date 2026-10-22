@@ -141,7 +141,7 @@ flowchart TB
             end
             subgraph PRIV["Private Subnets"]
                 subgraph EKS["☸️ EKS Cluster — flask-eks (v1.34)"]
-                    NODES["Node Group<br/>2× t3.medium"]
+                    NODES["Node Group<br/>2× t3.micro"]
                     subgraph NS["Namespace: flask-app-{env}"]
                         PODS["Flask App Pods<br/>Gunicorn 4 workers"]
                         HPA["HPA<br/>auto-scaler"]
@@ -205,7 +205,7 @@ AWS Cloud (ap-southeast-2)
 │   ├── Public Subnets (ap-southeast-2a, ap-southeast-2b)  ← ALB Load Balancer, NAT Gateway
 │   └── Private Subnets (ap-southeast-2a, ap-southeast-2b) ← EKS Worker Nodes (no direct internet)
 │       └── EKS Cluster: flask-eks (k8s 1.34)
-│           ├── Node Group: 2 × t3.medium (ON_DEMAND, max 4)
+│           ├── Node Group: 2 × t3.micro (ON_DEMAND, max 4)
 │           └── Namespaces:
 │               ├── flask-app-dev
 │               ├── flask-app-staging
@@ -529,7 +529,7 @@ flowchart TD
 | `vpc_cidr` | `10.1.0.0/16` |
 | `node_desired_size` | `2` |
 | `node_max_size` | `4` |
-| `instance_types` | `["t3.medium"]` |
+| `instance_types` | `["t3.micro"]` |
 | `capacity_type` | `ON_DEMAND` |
 
 ### 7.4 What Each Module Creates
@@ -1145,7 +1145,7 @@ terraform apply -var-file=environments/dev/terraform.tfvars
 
 ```bash
 aws eks update-kubeconfig --region ap-southeast-2 --name flask-eks
-kubectl get nodes    # should list 2 t3.medium nodes
+kubectl get nodes    # should list 2 t3.micro nodes
 ```
 
 ### Step 6 — Install Monitoring
