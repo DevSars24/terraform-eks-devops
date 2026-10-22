@@ -107,7 +107,7 @@ This is a **production-grade DevOps reference project** demonstrating how to bui
 | Application | Python 3.11, Flask 3.1.1, Gunicorn |
 | Containerization | Docker (multi-stage builds) |
 | Infrastructure as Code | Terraform (VPC, EKS, ECR modules) |
-| Orchestration | Kubernetes (EKS 1.29) |
+| Orchestration | Kubernetes (EKS 1.34) |
 | Config Management | Kustomize (dev/staging) + Helm (prod) |
 | CI/CD | GitHub Actions + Jenkins |
 | Observability | Prometheus + Grafana + Alertmanager |
@@ -140,7 +140,7 @@ flowchart TB
                 ALB["⚖️ Application Load Balancer"]
             end
             subgraph PRIV["Private Subnets"]
-                subgraph EKS["☸️ EKS Cluster — flask-eks (v1.29)"]
+                subgraph EKS["☸️ EKS Cluster — flask-eks (v1.34)"]
                     NODES["Node Group<br/>2× t3.medium"]
                     subgraph NS["Namespace: flask-app-{env}"]
                         PODS["Flask App Pods<br/>Gunicorn 4 workers"]
@@ -204,7 +204,7 @@ AWS Cloud (ap-southeast-2)
 ├── VPC (10.1.0.0/16)
 │   ├── Public Subnets (ap-southeast-2a, ap-southeast-2b)  ← ALB Load Balancer, NAT Gateway
 │   └── Private Subnets (ap-southeast-2a, ap-southeast-2b) ← EKS Worker Nodes (no direct internet)
-│       └── EKS Cluster: flask-eks (k8s 1.29)
+│       └── EKS Cluster: flask-eks (k8s 1.34)
 │           ├── Node Group: 2 × t3.medium (ON_DEMAND, max 4)
 │           └── Namespaces:
 │               ├── flask-app-dev
@@ -525,7 +525,7 @@ flowchart TD
 |----------|---------|
 | `aws_region` | `ap-southeast-2` |
 | `cluster_name` | `flask-eks` |
-| `cluster_version` | `1.29` |
+| `cluster_version` | `1.34` |
 | `vpc_cidr` | `10.1.0.0/16` |
 | `node_desired_size` | `2` |
 | `node_max_size` | `4` |
