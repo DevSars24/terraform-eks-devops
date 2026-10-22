@@ -7,7 +7,7 @@ gunicorn==23.0.0
 # ============================================
 # Monitoring & Metrics
 # ============================================
-prometheus-flask-instrumentator==7.0.2
+prometheus-flask-exporter==0.23.2
 
 # ============================================
 # Security

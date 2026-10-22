@@ -438,6 +438,19 @@ helm upgrade flask-app ./helm/flask-app --set image.tag=v2.1.0
 | **CD** (`cd.yml`) | Push to main | Build → Push ECR → Deploy Dev → Deploy Staging → Deploy Prod |
 | **Terraform** (`terraform.yml`) | Push terraform/ | Format → Init → Validate → Plan → Apply |
 
+#### 🔐 Required GitHub Secrets
+
+Configure these secrets in your repository settings (**Settings** → **Secrets and variables** → **Actions** → **Repository secrets**):
+
+| Secret Name | Required | Description | Example / Default |
+|-------------|----------|-------------|-------------------|
+| `AWS_ACCESS_KEY_ID` | **Yes** | AWS IAM Access Key ID for CI/CD authentication | `AKIAIOSFODNN7EXAMPLE` |
+| `AWS_SECRET_ACCESS_KEY` | **Yes** | AWS IAM Secret Access Key for CI/CD authentication | `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` |
+| `AWS_REGION` | No | Target AWS Region (defaults to `ap-south-1` if omitted) | `ap-south-1` |
+
+> [!NOTE]
+> Ensure the IAM user attached to these credentials has permissions for Amazon EKS, ECR, VPC, EC2, and IAM. Workflows gracefully skip AWS-dependent steps if secrets are absent (e.g. during PRs from external forks).
+
 #### Jenkins Pipeline
 
 Declarative pipeline with parallel stages, ECR push, and Helm deployment.

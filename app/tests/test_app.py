@@ -146,15 +146,17 @@ class TestMetricsEndpoint:
         response = client.get("/metrics")
         assert response.status_code == 200
 
-    def test_metrics_contains_request_count(self, client):
-        """Metrics should track total requests."""
-        data = client.get("/metrics").get_json()
-        assert "total_requests" in data
+    def test_metrics_content_type(self, client):
+        """Metrics should return Prometheus text exposition format."""
+        response = client.get("/metrics")
+        assert "text/plain" in response.content_type
 
-    def test_metrics_contains_uptime(self, client):
-        """Metrics should report uptime."""
-        data = client.get("/metrics").get_json()
-        assert "uptime_seconds" in data
+    def test_metrics_contains_flask_metrics(self, client):
+        """Metrics should include Flask prometheus exporter metrics."""
+        client.get("/")
+        response = client.get("/metrics")
+        body = response.data.decode()
+        assert "flask_http_request" in body or "flask_exporter_info" in body
 
 
 # ═══════════════════════════════════════════════════════════════════════════

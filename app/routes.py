@@ -141,24 +141,3 @@ def readiness():
         ),
         status_code,
     )
-
-
-@health_bp.route("/metrics")
-def metrics():
-    """
-    Application Metrics Endpoint — Exposes basic application metrics.
-    In production, integrate with Prometheus client library.
-
-    Returns:
-        JSON response with application metrics.
-    """
-    return jsonify(
-        {
-            "uptime_seconds": round(time.time() - _start_time, 2),
-            "total_requests": _metrics["total_requests"],
-            "total_errors": _metrics["total_errors"],
-            "endpoint_hits": _metrics["endpoint_hits"],
-            "python_version": platform.python_version(),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
-    )

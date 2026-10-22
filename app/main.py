@@ -39,6 +39,11 @@ def create_app(config_name: str = None) -> Flask:
     app.register_blueprint(api_bp)
     app.register_blueprint(health_bp)
 
+    # ─── Register Prometheus Metrics ────────────────────────────────────
+    from prometheus_flask_exporter import PrometheusMetrics
+
+    PrometheusMetrics(app)
+
     # ─── Register Error Handlers ────────────────────────────────────────
     _register_error_handlers(app)
 

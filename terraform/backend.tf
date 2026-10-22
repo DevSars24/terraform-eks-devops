@@ -3,10 +3,22 @@
 # ║  Uses S3 + DynamoDB for state locking                      ║
 # ║  Author: Saurabh Singh Rajput (@DevSars24)                ║
 # ╚══════════════════════════════════════════════════════════════╝
-
-# NOTE: Uncomment this block after creating the S3 bucket and DynamoDB table.
-# You can create them manually or use the bootstrap script in scripts/setup-backend.sh
-
+#
+# Backend Configuration Guide:
+# ----------------------------
+# By default, Terraform uses local state so CI validation and initial setups
+# work out-of-the-box without requiring an existing S3 bucket.
+#
+# To enable remote state storage with S3 and state locking with DynamoDB:
+# 1. Create an S3 bucket (e.g., "flask-eks-devops-terraform-state")
+# 2. Create a DynamoDB table with LockID (String) partition key
+#    (e.g., "flask-eks-devops-terraform-locks")
+# 3. Uncomment the backend block below OR provide backend config dynamically via:
+#    terraform init -backend-config="bucket=<YOUR_BUCKET>" \
+#                   -backend-config="key=eks/terraform.tfstate" \
+#                   -backend-config="region=ap-south-1" \
+#                   -backend-config="dynamodb_table=<YOUR_TABLE>"
+#
 # terraform {
 #   backend "s3" {
 #     bucket         = "flask-eks-devops-terraform-state"

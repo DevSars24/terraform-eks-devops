@@ -49,7 +49,7 @@ module "eks" {
       min_size     = var.node_min_size
 
       instance_types = var.instance_types
-      capacity_type  = var.capacity_type  # ON_DEMAND or SPOT
+      capacity_type  = var.capacity_type # ON_DEMAND or SPOT
 
       # IAM policy attachment for EBS CSI volume operations
       iam_role_additional_policies = {
@@ -63,7 +63,7 @@ module "eks" {
 
       tags = merge(var.common_tags, {
         "k8s.io/cluster-autoscaler/enabled"             = "true"
-        "k8s.io/cluster-autoscaler/${var.cluster_name}"  = "owned"
+        "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned"
       })
     }
   }
