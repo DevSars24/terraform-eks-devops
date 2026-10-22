@@ -8,7 +8,7 @@ name: "🏗️ Terraform Pipeline"
 
 on:
   push:
-    branches: [main]
+    branches: [main, "feature/**", "fix/**"]
     paths: ["terraform/**"]
   pull_request:
     branches: [main]
