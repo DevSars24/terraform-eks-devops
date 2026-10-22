@@ -28,10 +28,10 @@ kubectl describe pod <pod-name> -n flask-app
 
 ```bash
 # Verify ECR login
-aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com
+aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com
 
 # Check if image exists
-aws ecr describe-images --repository-name flask-eks-devops --region ap-south-1
+aws ecr describe-images --repository-name flask-eks-devops --region ap-southeast-2
 ```
 
 ### 3. Terraform State Lock

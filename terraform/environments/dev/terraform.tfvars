@@ -4,11 +4,11 @@
 
 project_name = "flask-eks-devops"
 environment  = "dev"
-aws_region   = "ap-south-1"
+aws_region   = "ap-southeast-2"
 
 # VPC
 vpc_cidr             = "10.1.0.0/16"
-availability_zones   = ["ap-south-1a", "ap-south-1b"]
+availability_zones   = ["ap-southeast-2a", "ap-southeast-2b"]
 private_subnet_cidrs = ["10.1.1.0/24", "10.1.2.0/24"]
 public_subnet_cidrs  = ["10.1.101.0/24", "10.1.102.0/24"]
 

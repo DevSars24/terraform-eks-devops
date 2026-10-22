@@ -200,11 +200,20 @@ class TestConfiguration:
         assert app.config["DEBUG"] is True
         assert app.config["TESTING"] is False
 
-    def test_production_config(self):
-        """Production config should disable DEBUG."""
+    def test_production_config(self, monkeypatch):
+        """Production config should disable DEBUG when SECRET_KEY is provided."""
+        monkeypatch.setenv("SECRET_KEY", "test-production-secret-key")
         app = create_app("production")
         assert app.config["DEBUG"] is False
         assert app.config["TESTING"] is False
+
+    def test_production_missing_secret_key_raises(self, monkeypatch):
+        """Production environment must raise ValueError when SECRET_KEY is missing."""
+        monkeypatch.delenv("SECRET_KEY", raising=False)
+        with pytest.raises(
+            ValueError, match="SECRET_KEY environment variable must be set in production"
+        ):
+            create_app("production")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -229,8 +238,9 @@ class TestSecurityGuardrails:
         response = client.get("/", headers={"Origin": "https://example.com"})
         assert response.headers.get("Access-Control-Allow-Origin") in ["*", "https://example.com"]
 
-    def test_hsts_header_in_production(self):
+    def test_hsts_header_in_production(self, monkeypatch):
         """Production mode should include Strict-Transport-Security."""
+        monkeypatch.setenv("SECRET_KEY", "test-production-secret-key")
         prod_app = create_app("production")
         with prod_app.test_client() as client:
             response = client.get("/")
