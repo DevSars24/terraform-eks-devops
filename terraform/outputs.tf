@@ -21,8 +21,8 @@ output "cluster_endpoint" {
 }
 
 output "cluster_oidc_provider_arn" {
-  description = "OIDC Provider ARN for IRSA"
-  value       = module.eks.oidc_provider_arn
+  description = "OIDC Provider ARN for IRSA (null if enable_irsa is false)"
+  value       = try(module.eks.oidc_provider_arn, null)
 }
 
 # ─── ECR Outputs ─────────────────────────────────────────────

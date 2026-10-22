@@ -18,5 +18,5 @@ cluster_version   = "1.34"
 node_desired_size = 2
 node_max_size     = 3
 node_min_size     = 1
-instance_types    = ["t3.medium"]
-capacity_type     = "SPOT" # Cost optimization for dev
+instance_types    = ["t3.micro"]
+capacity_type     = "ON_DEMAND" # Free tier eligible in dev
