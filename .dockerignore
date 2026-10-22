@@ -1,0 +1,43 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+dist
+build
+.pytest_cache
+htmlcov
+.coverage
+.mypy_cache
+venv
+.venv
+
+# IDE
+.vscode
+.idea
+*.swp
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+
+# Terraform
+terraform/
+*.tfstate*
+
+# Docs
+docs/
+*.md
+LICENSE
+CONTRIBUTING.md
+CHANGELOG.md
+
+# Misc
+.env
+.env.*
+!.env.example
+*.log

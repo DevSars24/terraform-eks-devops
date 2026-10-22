@@ -878,6 +878,18 @@ flowchart TD
 | Best for | Projects already on GitHub, less ops overhead | Enterprises needing custom plugins/on-prem control |
 | Secrets | GitHub encrypted secrets | Jenkins credentials store |
 
+### 11.7 Required GitHub Secrets
+
+Configure these secrets in your repository settings (**Settings** → **Secrets and variables** → **Actions** → **Repository secrets**):
+
+| Secret Name | Required | Description | Example / Default |
+|-------------|----------|-------------|-------------------|
+| `AWS_ACCESS_KEY_ID` | **Yes** | AWS IAM Access Key ID for CI/CD authentication | `AKIAIOSFODNN7EXAMPLE` |
+| `AWS_SECRET_ACCESS_KEY` | **Yes** | AWS IAM Secret Access Key for CI/CD authentication | `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` |
+| `AWS_REGION` | No | Target AWS Region (defaults to `ap-south-1` if omitted) | `ap-south-1` |
+
+> [!NOTE]
+> Ensure the IAM user attached to these credentials has permissions for Amazon EKS, ECR, VPC, EC2, and IAM. Workflows gracefully skip AWS-dependent steps if secrets are absent (e.g. during PRs from external forks).
 
 ---
 
@@ -1382,7 +1394,7 @@ A quick reference for every term used throughout this document — useful for in
 > **Terraform backend is commented out** in `backend.tf`. Remote state (S3 + DynamoDB) must be bootstrapped before team collaboration or CI/CD applies Terraform — see [Step 3 of the deployment guide](#step-3--bootstrap-terraform-remote-state).
 
 > [!NOTE]
-> **`/metrics` endpoint** returns basic in-memory metrics (JSON). For production Prometheus scraping, the `prometheus-flask-instrumentator` library (already in `requirements.txt`) should be wired up in `main.py` to expose proper `/metrics` in Prometheus format.
+> **`/metrics` endpoint** exposes standard Prometheus exposition format powered by `prometheus-flask-exporter` (configured in `app/main.py`), ready for automatic scraping by Prometheus and `ServiceMonitor`.
 
 > [!TIP]
 > **Kustomize for dev/staging, Helm for prod** — this split is intentional but worth documenting to avoid confusion during onboarding (see [Section 10](#10-kustomize-vs-helm--why-both)).
@@ -1398,7 +1410,7 @@ A quick reference for every term used throughout this document — useful for in
 |---------|---------|---------|
 | `flask` | 3.1.1 | Web framework |
 | `gunicorn` | 23.0.0 | Production WSGI server |
-| `prometheus-flask-instrumentator` | 7.0.2 | Auto metrics for Flask |
+| `prometheus-flask-exporter` | 0.23.2 | Standard Prometheus metrics exporter for Flask |
 | `flask-cors` | 5.0.1 | Cross-Origin Resource Sharing |
 | `pytest` | 8.3.5 | Test runner |
 | `pytest-cov` | 6.1.1 | Coverage reporting |

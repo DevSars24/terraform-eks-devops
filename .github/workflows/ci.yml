@@ -8,7 +8,7 @@ name: "🔍 CI Pipeline"
 
 on:
   push:
-    branches: [main, develop, "feature/**"]
+    branches: [main, develop, "feature/**", "fix/**"]
   pull_request:
     branches: [main, develop]
 
@@ -117,6 +117,7 @@ jobs:
         with:
           context: .
           file: docker/Dockerfile
+          load: true
           push: false
           tags: flask-eks-app:ci-test
           cache-from: type=gha

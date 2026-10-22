@@ -44,6 +44,8 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
 
       # ─── Anti-Affinity (spread across nodes) ───────────────
       affinity:
@@ -72,6 +74,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: flask-eks-app-config
+            - secretRef:
+                name: flask-eks-app-secret
 
           # ─── Resource Limits ───────────────────────────────
           resources:
@@ -86,9 +90,14 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
             capabilities:
               drop:
                 - ALL
+            seccompProfile:
+              type: RuntimeDefault
 
           # ─── Liveness Probe ────────────────────────────────
           # Checks if the app process is alive

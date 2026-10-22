@@ -1,10 +1,12 @@
-from flask import Flask
+"""
+Application Entrypoint
+======================
+Production-ready application instance created via factory.
+Enables backward-compatible invocation: python app.py or flask --app app run
+"""
+from app.main import create_app
 
-app = Flask(__name__)
-
-@app.route("/")
-def home():
-    return "Flask App running on AWS EKS"
+app = create_app()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

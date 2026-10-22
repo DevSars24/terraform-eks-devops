@@ -49,6 +49,7 @@ module "eks" {
 module "ecr" {
   source = "./modules/ecr"
 
-  repository_name = "${var.project_name}-${var.environment}"
-  common_tags     = local.common_tags
+  repository_name      = "${var.project_name}-${var.environment}"
+  image_tag_mutability = var.ecr_image_tag_mutability
+  common_tags          = local.common_tags
 }

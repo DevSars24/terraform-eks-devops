@@ -19,4 +19,4 @@ node_desired_size = 2
 node_max_size     = 3
 node_min_size     = 1
 instance_types    = ["t3.medium"]
-capacity_type     = "SPOT"  # Cost optimization for dev
+capacity_type     = "SPOT" # Cost optimization for dev

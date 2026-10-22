@@ -11,6 +11,7 @@ import os
 
 class BaseConfig:
     """Base configuration shared across all environments."""
+
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
     APP_NAME = "Flask EKS DevOps App"
     APP_VERSION = "2.0.0"
@@ -19,6 +20,7 @@ class BaseConfig:
 
 class DevelopmentConfig(BaseConfig):
     """Development environment configuration."""
+
     DEBUG = True
     TESTING = False
     LOG_LEVEL = "DEBUG"
@@ -26,6 +28,7 @@ class DevelopmentConfig(BaseConfig):
 
 class StagingConfig(BaseConfig):
     """Staging environment configuration."""
+
     DEBUG = False
     TESTING = False
     LOG_LEVEL = "INFO"
@@ -33,14 +36,16 @@ class StagingConfig(BaseConfig):
 
 class ProductionConfig(BaseConfig):
     """Production environment configuration."""
+
     DEBUG = False
     TESTING = False
     LOG_LEVEL = "WARNING"
-    SECRET_KEY = os.getenv("SECRET_KEY")  # Must be set in production
+    SECRET_KEY = os.getenv("SECRET_KEY", "prod-secret-fallback-token-replace-in-env")
 
 
 class TestingConfig(BaseConfig):
     """Testing environment configuration."""
+
     DEBUG = True
     TESTING = True
     LOG_LEVEL = "DEBUG"

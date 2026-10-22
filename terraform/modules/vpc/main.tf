@@ -17,19 +17,19 @@ module "vpc" {
 
   # ─── NAT Gateway (Internet access for private subnets) ─────
   enable_nat_gateway   = true
-  single_nat_gateway   = var.environment == "dev" ? true : false  # Cost optimization for dev
+  single_nat_gateway   = var.environment == "dev" ? true : false # Cost optimization for dev
   enable_dns_hostnames = true
   enable_dns_support   = true
 
   # ─── EKS Required Tags ─────────────────────────────────────
   public_subnet_tags = {
     "kubernetes.io/role/elb"                    = 1
-    "kubernetes.io/cluster/${var.cluster_name}"  = "owned"
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }
 
   private_subnet_tags = {
-    "kubernetes.io/role/internal-elb"            = 1
-    "kubernetes.io/cluster/${var.cluster_name}"  = "owned"
+    "kubernetes.io/role/internal-elb"           = 1
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }
 
   tags = merge(var.common_tags, {

@@ -14,9 +14,12 @@ module "eks" {
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
 
-  # ─── Cluster Access ─────────────────────────────────────────
+  # ─── Cluster Access & Security ──────────────────────────────
   cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = true
+
+  # Security Guardrail: Enable control plane audit and API logs (CIS AWS & EKS Benchmark)
+  cluster_enabled_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
   # ─── Cluster Addons ─────────────────────────────────────────
   cluster_addons = {
@@ -46,7 +49,12 @@ module "eks" {
       min_size     = var.node_min_size
 
       instance_types = var.instance_types
-      capacity_type  = var.capacity_type  # ON_DEMAND or SPOT
+      capacity_type  = var.capacity_type # ON_DEMAND or SPOT
+
+      # IAM policy attachment for EBS CSI volume operations
+      iam_role_additional_policies = {
+        AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+      }
 
       labels = {
         role        = "general"
@@ -55,7 +63,7 @@ module "eks" {
 
       tags = merge(var.common_tags, {
         "k8s.io/cluster-autoscaler/enabled"             = "true"
-        "k8s.io/cluster-autoscaler/${var.cluster_name}"  = "owned"
+        "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned"
       })
     }
   }
